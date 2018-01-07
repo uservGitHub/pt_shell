@@ -9,3 +9,7 @@ $ git push -u origin newBranch
 $ git branch -r
 ==> origin/newBranch
 
+删除远程分支
+$ -> 获取远程分支
+$ git branch -r -d origin/remoteBranch
+$ git push origin :remoteBranch
