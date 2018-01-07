@@ -9,3 +9,9 @@ $ git push -u newRemoteBranch newLocalBranch
 $ git branch -r
 ==> remote status
 
+远程分支的获取
+$ git branch -b
+$ git fetch git@github.com:xxx/yyy.git remoteBranch
+$ git pull
+$ git push -u remoteBranch localBranch
+
