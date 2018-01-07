@@ -1,0 +1,11 @@
+远程分支的创建和提交
+$ git remote add newRemoteBranch git@github.com:xxx/yyy.git
+$ git remote
+==> local status
+origin
+newRemoteBranch
+$ git checkout -b newLocalBranch newRemoteBranch/master
+$ git push -u newRemoteBranch newLocalBranch
+$ git branch -r
+==> remote status
+
