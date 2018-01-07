@@ -10,6 +10,9 @@ out
 gen-external-apklibs/
 classes/
 
+#Local Project
+refLibrary/
+
 # Local configuration file (sdk path, etc)
 local.properties
 
