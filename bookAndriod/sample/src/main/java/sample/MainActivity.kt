@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.Gravity
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
+import lib.book.PdfFile
 import org.jetbrains.anko.*
 
 
@@ -20,5 +21,8 @@ import org.jetbrains.anko.*
 class MainActivity:AppCompatActivity(),AnkoLogger{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+    }
+    private fun holder(){
+        val pf = PdfFile("",this.baseContext)
     }
 }
