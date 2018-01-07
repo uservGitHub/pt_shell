@@ -6,6 +6,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Rect
 import android.util.SparseBooleanArray
+import java.io.File
+import android.os.ParcelFileDescriptor
 
 
 class PdfFile(private val filePath:String,private val ctx: Context) {
