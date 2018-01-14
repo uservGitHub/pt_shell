@@ -42,8 +42,7 @@ class TestActivity:AppCompatActivity(){
                     val arr = arrayOf(2.0F, 1.5F,1F,0.8F)
                     onClick {
                         selector("ZoomTo", arr.map { it.toString() }, { _, i ->
-                            targetView.backGrid.zoomTo(arr[i])
-                            targetView.invalidate()
+
                         })
                     }
                 }
