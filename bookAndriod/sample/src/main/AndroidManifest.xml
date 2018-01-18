@@ -12,7 +12,7 @@
 		<activity android:name=".Stage_1_1"/>
 		<activity android:name=".Stage_2_1"/>
 		<activity
-			android:name=".MainActivity">
+			android:name=".TestSimpleHost">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />

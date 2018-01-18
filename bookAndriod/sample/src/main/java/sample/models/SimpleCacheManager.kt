@@ -15,7 +15,7 @@ class BackGrid(){
     }
 }
 class CacheGird(){
-    //var key:Int = -1    //List<BackGrid> 索引号
+    var key:Int = -1    //List<BackGrid> 索引号
     var data:String? = null
         private set
     fun update(data:String){
@@ -64,9 +64,12 @@ class SimpleCacheManager(val visCount:Int,private val backObjs: List<BackGrid>) 
         }
     }
     private inline fun fetch(position: Int,key:Int) {
-        Thread.sleep(100)
+        //Thread.sleep(100)
         val ind = if (position < 0) position + cacheBuf.size else position
-        cacheBuf[ind.rem(cacheBuf.size)].update(backObjs[key].getData())
+        cacheBuf[ind.rem(cacheBuf.size)].apply {
+            update(backObjs[key].getData())
+            this.key = key
+        }
     }
     //endregion
 
