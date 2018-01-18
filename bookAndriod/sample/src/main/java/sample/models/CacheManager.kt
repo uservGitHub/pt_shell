@@ -34,7 +34,17 @@ class CacheObj(){
     }
 }
 
-class CacheManager(){
+/**
+ * 先简单后复杂
+ * 初始化可视块数，后台区间
+ * 目前都是数值
+ * 核心实现：
+ * 1 初始对标，中心值
+ * 2 输入偏移量，输出触发，动态计算后续
+ */
+
+
+class CacheManager1(){
     //指向buffer的下标
     data class BufPosition(var beg:Int=-1,var end:Int=-1,var preBeg:Int=-1,var preEnd:Int=-1,var postBeg:Int=-1,var postEnd:Int=-1){
         var flagTick:Int = -1
@@ -133,6 +143,7 @@ class CacheManager(){
                 buffer[i].update(i,objArray[objInd].fetch())
             }
         }
+        index = (bufPosition.beg+bufPosition.end)/2
         onShowListener!!.invoke(index)
     }
     private fun initPre(){
