@@ -122,12 +122,12 @@ class SimpleCacheManager(val visCount:Int,private val backObjs: List<BackGrid>) 
         if (ind !in pos.beg - halfCount..pos.end + halfCount) {
             throw IllegalArgumentException("不在范围内")
         }
+        val delta = ind - pos.ind
         showPos.apply {
-            beg = pos.beg
-            end = pos.end
+            beg = pos.beg+delta
+            end = pos.end+delta
         }
         onShowListener!!.invoke(pos.ind)
-        val delta = ind - pos.ind
         if (delta == 0) {
             return
         }

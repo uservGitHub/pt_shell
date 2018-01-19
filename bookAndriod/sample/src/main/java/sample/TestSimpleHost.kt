@@ -68,7 +68,7 @@ class TestSimpleHost : AppCompatActivity(){
                     }
                 }
                 button("MoveTo") {
-                    val arr = arrayOf(10, 15, 20, -10, -15, -20)
+                    val arr = arrayOf(50, 100, 200, -50, -100, -200)
                     onClick {
                         selector("Can Use Delta Move X?", arr.map { it.toString() }, { _, i ->
                             targetView.moveOffset(arr[i].toFloat(), 0F)

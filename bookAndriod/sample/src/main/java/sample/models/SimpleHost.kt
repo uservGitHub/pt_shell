@@ -1,10 +1,7 @@
 package sample.models
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Rect
+import android.graphics.*
 import android.util.Log
 import android.widget.RelativeLayout
 
@@ -16,6 +13,56 @@ import android.widget.RelativeLayout
  * 简单承载控件
  */
 class SimpleHost(ctx:Context):RelativeLayout(ctx) {
+    inner class CellManager(val count:Int, backDatas:List<BackGrid>){
+        val cacheManager:SimpleCacheManager
+        var index: Int
+            private set
+        var cellMark: Float
+        val cellWidth: Float
+        fun moveOffset(delta:Float){
+            if (cacheManager.canResponse){
+                cellMark += delta
+                val deltaIndex = (cellMark/cellWidth).toInt()
+                if(deltaIndex!=0){
+                    info("deltaIndex=$deltaIndex")
+                }
+                cellMark = cellMark.rem(cellWidth)
+                cacheManager.locate(index+deltaIndex)
+            }
+        }
+        fun drawCell(canvas: Canvas){
+           val cellSide = cellWidth
+            val rect = RectF(0F,0F,cellSide,cellSide)
+            rect.offset(-cellMark, this@SimpleHost.height.toFloat()/2)
+           cacheManager.objs.forEach {
+               info("$rect")
+                rectDraw(canvas,
+                        strokePaint(Color.BLACK, 4F),
+                        rect)
+               textDrawCenter(canvas,
+                       textPaint(Color.RED, 48F),
+                       rect,
+                       it.data ?: "null")
+               rect.offset(cellWidth, 0F)
+           }
+        }
+        init {
+            cacheManager = SimpleCacheManager(count+1, backDatas)
+            cacheManager.endToEnd = true
+            index = cacheManager.start()
+            cellMark = 0F
+            cacheManager.setOnShowListener {
+                centerIndex: Int ->
+                index = centerIndex
+                info("index=$index")
+                this@SimpleHost.post {
+                    this@SimpleHost.reDraw()
+                }
+            }
+            cellWidth = this@SimpleHost.width.toFloat()/count
+            info("cellWidth=$cellWidth")
+        }
+    }
     companion object {
         private const val TAG = "_SiHt"
         val emptyPaint = Paint()
@@ -56,9 +103,18 @@ class SimpleHost(ctx:Context):RelativeLayout(ctx) {
             canvas.drawRect(rect, strokePaint)
         }
 
+        fun rectDraw(canvas: Canvas, strokePaint: Paint, rect: RectF) {
+            canvas.drawRect(rect, strokePaint)
+        }
+
         fun textDrawCenter(canvas: Canvas, textPaint: Paint, rect: Rect, msg: Any) {
             canvas.drawText("$msg",
                     rect.exactCenterX(), (rect.exactCenterY() + deltaCenterHeightFromFont(textPaint)),
+                    textPaint)
+        }
+        fun textDrawCenter(canvas: Canvas, textPaint: Paint, rect: RectF, msg: Any) {
+            canvas.drawText("$msg",
+                    rect.centerX(), (rect.centerY() + deltaCenterHeightFromFont(textPaint)),
                     textPaint)
         }
     }
@@ -66,47 +122,30 @@ class SimpleHost(ctx:Context):RelativeLayout(ctx) {
     init {
         setWillNotDraw(false)
     }
-    private lateinit var cacheManager:SimpleCacheManager
-    private var index = -1
-    private val side = 30
-    private val visCount = 5
-    private var shockX = 0
-    fun setup(){
-        val backData = List<BackGrid>(100, {index: Int -> BackGrid().apply { id=index } })
-        cacheManager = SimpleCacheManager(visCount, backData)
-        index = cacheManager.start()
-        cacheManager.setOnShowListener {
-            centerIndex: Int ->
-            index = centerIndex
-            this@SimpleHost.post {
-                this@SimpleHost.reDraw()
-            }
-        }
+
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+        super.onLayout(changed, l, t, r, b)
+        info("width=$width")
+        setup()
     }
 
+    private lateinit var cellManager:CellManager
+    private var canDrawing = false
+    fun setup(){
+        if (canDrawing) return
+        val backData = List<BackGrid>(100, {index: Int -> BackGrid().apply { id=index } })
+        cellManager = CellManager(4, backData)
+        canDrawing = true
+        info("setup")
+        moveOffset(0F,0F)
+    }
     fun moveOffset(deltaX:Float, deltaY:Float){
-        if (cacheManager.canResponse){
-            shockX += deltaX.toInt()
-            if (Math.abs(shockX)>=side){
-                val delta = (shockX/side).toInt()
-                shockX = shockX.rem(side)
-                cacheManager.locate(index + delta)
-            }
-        }
+        cellManager.moveOffset(deltaX)
     }
 
     private fun showContext(canvas: Canvas) {
-        val cellWidth = width / visCount
-        val cellHeight = height
-        val rect = Rect(0, 0, cellWidth, cellHeight)
-        cacheManager.objs.forEach {
-            //info(it.data)
-            textDrawCenter(canvas,
-                    textPaint(Color.RED, 48F),
-                    rect,
-                    it.data ?: "null")
-            rect.offset(cellWidth, 0)
-        }
+        if (!canDrawing) return
+        cellManager.drawCell(canvas)
     }
 
     private fun reDraw(){
@@ -118,9 +157,8 @@ class SimpleHost(ctx:Context):RelativeLayout(ctx) {
             return;
         }
         canvas.drawColor(Color.WHITE)
-        if(index == -1){
-            return
-        }
+        info("draw Beg")
         showContext(canvas)
+        info("draw End")
     }
 }

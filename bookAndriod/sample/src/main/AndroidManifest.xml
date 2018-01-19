@@ -12,7 +12,9 @@
 		<activity android:name=".Stage_1_1"/>
 		<activity android:name=".Stage_2_1"/>
 		<activity
-			android:name=".TestSimpleHost">
+			android:name=".TestSimpleHost"
+			android:configChanges="keyboardHidden|orientation|screenSize"
+			android:windowSoftInputMode="adjustNothing|stateAlwaysHidden">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
