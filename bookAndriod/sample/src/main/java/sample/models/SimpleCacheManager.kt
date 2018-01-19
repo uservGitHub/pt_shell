@@ -63,7 +63,7 @@ class SimpleCacheManager(val visCount:Int,private val backObjs: List<BackGrid>) 
             return ind.rem(size)
         }
     }
-    private inline fun fetch(position: Int,key:Int) {
+    private inline fun fetch(position: Int, key:Int) {
         //Thread.sleep(100)
         val ind = if (position < 0) position + cacheBuf.size else position
         cacheBuf[ind.rem(cacheBuf.size)].apply {
@@ -93,7 +93,7 @@ class SimpleCacheManager(val visCount:Int,private val backObjs: List<BackGrid>) 
             beg = 0
             end = visCount - 1
         }
-        for (i in -1..-halfCount) {
+        for (i in -1 downTo -halfCount) {
             val key = getKey(i)
             if (key == ERRORKEY)break
             fetch(i,key)
@@ -163,8 +163,19 @@ class SimpleCacheManager(val visCount:Int,private val backObjs: List<BackGrid>) 
     }
     //endregion
     val objs = buildSequence<CacheGird> {
-        for (i in showPos.beg..showPos.end){
-            yield(cacheBuf[i])
+        val length = cacheBuf.size
+        for (i in showPos.beg..showPos.end) {
+            if (i < 0) {
+                if (endToEnd) {
+                    if (i.rem(length) == 0) {
+                        yield(cacheBuf[0])
+                    } else {
+                        yield(cacheBuf[(1 - i / length) * length + i])
+                    }
+                }
+            } else {
+                yield(cacheBuf[i.rem(length)])
+            }
         }
     }
 }

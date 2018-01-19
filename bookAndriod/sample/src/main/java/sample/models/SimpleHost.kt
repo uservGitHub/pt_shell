@@ -3,6 +3,7 @@ package sample.models
 import android.content.Context
 import android.graphics.*
 import android.util.Log
+import android.view.MotionEvent
 import android.widget.RelativeLayout
 
 /**
@@ -19,15 +20,18 @@ class SimpleHost(ctx:Context):RelativeLayout(ctx) {
             private set
         var cellMark: Float
         val cellWidth: Float
-        fun moveOffset(delta:Float){
-            if (cacheManager.canResponse){
+        fun moveOffset(delta:Float) {
+            if (cacheManager.canResponse) {
                 cellMark += delta
-                val deltaIndex = (cellMark/cellWidth).toInt()
-                if(deltaIndex!=0){
+                val deltaIndex = (cellMark / cellWidth).toInt()
+                if (deltaIndex != 0) {
+                    //是否要结算
                     info("deltaIndex=$deltaIndex")
+                    cellMark = cellMark.rem(cellWidth)
+                    cacheManager.locate(index + deltaIndex)
+                } else {
+                    this@SimpleHost.reDraw()
                 }
-                cellMark = cellMark.rem(cellWidth)
-                cacheManager.locate(index+deltaIndex)
             }
         }
         fun drawCell(canvas: Canvas){
@@ -118,9 +122,12 @@ class SimpleHost(ctx:Context):RelativeLayout(ctx) {
                     textPaint)
         }
     }
-
+    private val moveManager:SimpleMoveManager
+    private val animationManager:AnimationManager
     init {
         setWillNotDraw(false)
+        animationManager = AnimationManager(this)
+        moveManager = SimpleMoveManager(this, animationManager)
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
@@ -128,7 +135,10 @@ class SimpleHost(ctx:Context):RelativeLayout(ctx) {
         info("width=$width")
         setup()
     }
-
+    fun onTestTap(e:MotionEvent): Boolean{
+        info("onTestTag=(${e.x},${e.y})")
+        return true
+    }
     private lateinit var cellManager:CellManager
     private var canDrawing = false
     fun setup(){
@@ -137,6 +147,7 @@ class SimpleHost(ctx:Context):RelativeLayout(ctx) {
         cellManager = CellManager(4, backData)
         canDrawing = true
         info("setup")
+        moveManager.enable()
         moveOffset(0F,0F)
     }
     fun moveOffset(deltaX:Float, deltaY:Float){
